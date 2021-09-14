@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- First row of cards -->
+<div class = "row">
+<!-- Card 1 -->
+<div class = "col-lg-6">
+<div class="card text-white bg-primary mb-3" style="max-width: 40rem; margin-left: 20px;">
+    <h4 class="card-header">Circuit Upgrade</h4>
+    <div class="card-body">
+        <form id="validateForm" name="validateForm" method="post" action="validateForm">
+            <h5>What's checked?</h5>    
+                <ul>
+                    <li><u>Device Basics</u>: CPU and memory utilization are below 75%</li>
+                    <li><u>BGP Neighbors</u>: A minimum of 2 'Established' eBGP neighbors</li>
+                    <li><u>External connectivity</u>: Ping a public DNS service (Google - 8.8.8.8)</li>
+                    <li><u>Logging</u>: Ensure there are not any logs with an 'Error' (3) severity level or higher</li>
+                </ul>
+            <hr style="background-color: white;">
+            <div>
+            <label>Choose Device OS:</label>
+            <select name="osType" id="osType">
+                <option disabled selected value>--</option>
+                <option value="iosxe">IOS-XE</option>
+                <option value="ios">IOS</option>
+                <option disabled value="asa">ASA</option>
+            </select>
+            </div>
+            <br>
+            <div>
+                <label>Device Hostname:</label>
+                <input type="text" name="deviceHostname" id="deviceHostname" placeholder="Enter hostname..." />
+            </div>
+            <br>
+            <div>
+                <label>Device IP:</label>
+                <input type="text" name="deviceIp" id="deviceIp" placeholder="Enter device IP..." />
+            </div>
+            <br>
+            
+            <button type="submit" id="circuitSubmit" class="btn btn-success">Submit</button>
+        </form>
+        <script>
+        $(document).ready(function(){
+            $("#circuitSubmit").click(function(){
+              // Submit the form
+              $("#validateForm").submit()
+              // Disable button click and add loading spinner
+              $("#circuitSubmit").attr("disabled", true);
+              $("#circuitSubmit").html('<div class="spinner-border spinner-border-sm" id="circuitSpinner" role="status"><span class="sr-only">Loading...</span></div> Loading...');
+            });
+        });
+        </script>
+    </div>
+</div>
+</div>
+<!-- End of Card 1 -->
+<!-- Card 2 -->
+<div class = "col-lg-6">
+<div class="card text-white bg-primary mb-3" style="max-width: 40rem; margin-left: 20px;">
+    <h4 class="card-header">TBD</h4>
+    <div class="card-body">
+        <form id="TBD" name="TBD" method="post" action="TBD">
+            <h5>What's checked?</h5>    
+                <ul>
+                    <li>TBD</li>
+                </ul>
+            <hr style="background-color: white;">
+            <div>
+            <label>Choose Device OS:</label>
+            <select name="osType" id="osType">
+                <option disabled selected value>--</option>
+                <option value="iosxe">IOS-XE</option>
+                <option value="ios">IOS</option>
+                <option disabled value="asa">ASA</option>
+            </select>
+            </div>
+            <br>
+            <div>
+                <label>Device Hostname:</label>
+                <input type="text" name="deviceHostname" id="deviceHostname" placeholder="Enter hostname..." />
+            </div>
+            <br>
+            <div>
+                <label>Device IP:</label>
+                <input type="text" name="deviceIp" id="deviceIp" placeholder="Enter device IP..." />
+            </div>
+            <br>
+
+            <button type="submit" class="btn btn-success" onclick="">Submit</button>
+        </form>
+    
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

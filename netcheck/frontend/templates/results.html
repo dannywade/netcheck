@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- First row of cards -->
+<div class = "row">
+<!-- Start of Summary card -->
+<div class = "col-lg-4">
+    <div class="card text-white bg-primary mb-3" style="max-width: 50rem; margin-left: 20px;">
+        <h4 class="card-header">Summary:</h4>
+        <div class="card-body">
+            <h5 style="display: inline;">Success Rate: </h5><h5 class="text-success">{{ success_rate }}</h5>
+            <br>
+            <h5 style="display: inline;">Number of Passes: </h5><h5 class="text-success">{{ passes }}</h5>
+            <h5 style="display: inline;">Number of Errors: </h5><h5 class="text-warning">{{ errors }}</h5>
+            <h5 style="display: inline;">Number of Failures: </h5><h5 class="text-danger">{{ failures }}</h5>
+        </div>
+    </div>
+</div>
+<!-- End of Summary card -->
+<!-- Start of Results card -->
+<div class = "col-lg-6">
+<div class="card text-white bg-primary mb-3" style="max-width: 50rem; margin-left: 20px;">
+    <h4 class="card-header">Detailed Results:</h4>
+    <div class="card-body">
+        <div class="form-group">
+            <textarea class="form-control" id="resultsTextarea" rows="3" style="margin-top: 0px; margin-bottom: 0px; margin-left: 20px; max-width: 45rem; height: 30rem;">
+                {{ output }}
+            </textarea><br><br>
+            <button onclick="saveTextAsFile(resultsTextarea.value, '{{ host }}-results.txt')">Download</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- End of Results card -->
+</div>
+<!-- End of first row -->
+{% endblock %}
