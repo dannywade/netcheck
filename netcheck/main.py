@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form
+from fastapi.params import Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 import os
+from datetime import datetime
 # Local imports
-from netcheck.api.api_v1.api import api_router
+from api.api_v1.api import api_router
 
 app_dir = os.path.dirname(__file__)
 
@@ -37,3 +39,11 @@ async def post_checks(request: Request):
 @app.get("/analysis", response_class=HTMLResponse)
 async def analysis(request: Request):
     return templates.TemplateResponse("analysis.html", {"request": request})
+
+@app.post("/validateForm", response_class=HTMLResponse)
+async def validation_results(request: Request, osType: str = Form(...), deviceIp: str = Form(...) ):
+    date = datetime.date
+    
+    # TODO: Need to figure out how to run pyATS testscript most efficiently - easypy or standalone
+    
+    return templates.TemplateResponse("results.html", {"request": request, "date": date, "device_ip": deviceIp})

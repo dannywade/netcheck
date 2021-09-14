@@ -23,10 +23,10 @@
     <h4 class="card-header">Detailed Results:</h4>
     <div class="card-body">
         <div class="form-group">
-            <textarea class="form-control" id="resultsTextarea" rows="3" style="margin-top: 0px; margin-bottom: 0px; margin-left: 20px; max-width: 45rem; height: 30rem;">
+            <textarea class="form-control" id="resultsTextarea" rows="3" style="margin-top: 0px; margin-bottom: 0px; margin-left: 20px; max-width: 45rem; height: 30rem;" readonly>
                 {{ output }}
             </textarea><br><br>
-            <button onclick="saveTextAsFile(resultsTextarea.value, '{{ host }}-results.txt')">Download</button>
+            <button onclick="saveTextAsFile(resultsTextarea.value, '{{ date }}-{{ device_ip }}-results.txt')">Download</button>
         </div>
     </div>
 </div>

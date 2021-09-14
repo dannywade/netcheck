@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from netcheck.api.api_v1.endpoints import batfish, pyats
+from api.api_v1.endpoints import batfish, pyats
 ## File to include all routers
 
 api_router = APIRouter()
