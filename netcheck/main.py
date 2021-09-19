@@ -2,11 +2,17 @@ from fastapi import FastAPI, Request, Form
 from fastapi.params import Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from starlette.responses import HTMLResponse
+from fastapi.responses import HTMLResponse
+from sqlalchemy.future import select
+from sqlmodel import SQLModel, Session
 import os
 from datetime import datetime
 # Local imports
 from api.api_v1.api import api_router
+from backend.models import TestResults
+from backend.db import create_db_and_tables, engine
+
+# Run the app: uvicorn main:app --reload
 
 app_dir = os.path.dirname(__file__)
 
@@ -16,6 +22,51 @@ app = FastAPI(description=api_description,
             version="V1",
             title="NetCheck API")
 
+# Initialize the SQLite DB
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
+
+# Adds data in as rows
+def create_test_results():
+    result1 = TestResults(success_rate=100.0, failure_rate=0, tests_passed=3, tests_failed=0)
+    result2 = TestResults(success_rate=50.0, failure_rate=50.0, tests_passed=2, tests_failed=2)
+    result3 = TestResults(success_rate=0, failure_rate=100.0, tests_passed=0, tests_failed=3)
+    
+    with Session(engine) as session:
+        session.add(result1)
+        session.add(result2)
+        session.add(result3)
+        
+        session.commit()
+        
+        session.refresh(result1)
+
+def select_test_results():
+    with Session(engine) as session:
+        # Filter to test results with 100% success rate
+        statement = select(TestResults).where(TestResults.success_rate == 100.0)
+        result_1 = session.get(TestResults, 1)
+        results = session.exec(statement)
+        one_result = results.first()
+        
+        # Updating values for first row with 100% success rate
+        # result_1.success_rate = 55.0
+        # session.add(result_1)
+        # session.commit()
+        # session.refresh(result_1)
+        # print(result_1)
+        
+        
+        # Print all rows
+        print(results.all())
+        # Print first result of many
+        # print(results.first())
+
+create_db_and_tables()
+create_test_results()
+select_test_results()
+
 # API router
 app.include_router(api_router, prefix="/api/v1")
 
@@ -24,7 +75,7 @@ app.mount("/frontend/static", StaticFiles(directory=f"{app_dir}/frontend/static"
 templates = Jinja2Templates(directory=f"{app_dir}/frontend/templates")
 
 # Frontend views
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
