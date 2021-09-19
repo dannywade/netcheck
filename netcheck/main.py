@@ -29,9 +29,11 @@ def on_startup():
 
 # Adds data in as rows
 def create_test_results():
-    result1 = TestResults(success_rate=100.0, failure_rate=0, tests_passed=3, tests_failed=0)
-    result2 = TestResults(success_rate=50.0, failure_rate=50.0, tests_passed=2, tests_failed=2)
-    result3 = TestResults(success_rate=0, failure_rate=100.0, tests_passed=0, tests_failed=3)
+    current_date = datetime.now()
+    # current_date = get_time.strftime("%m/%d/%Y %H:%M:%S")
+    result1 = TestResults(name="circuit_upgrade", executed_at=current_date, success_rate=100.0, failure_rate=0, tests_passed=3, tests_failed=0)
+    result2 = TestResults(name="wan_check", executed_at=current_date, success_rate=50.0, failure_rate=50.0, tests_passed=2, tests_failed=2)
+    result3 = TestResults(name="l2_stp_check", executed_at=current_date, success_rate=0, failure_rate=100.0, tests_passed=0, tests_failed=3)
     
     with Session(engine) as session:
         session.add(result1)

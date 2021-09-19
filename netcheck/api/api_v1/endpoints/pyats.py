@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 from typing import List
-from backend.models import TestResults, TestResultsRead
+from backend.models import TestResults, TestResultsRead, TestResultsDelete
 from backend.db import engine
 
 router = APIRouter()
@@ -18,4 +18,19 @@ def get_single_test_result(test_id: int):
         test_result = session.get(TestResults, test_id)
         if not test_result:
             raise HTTPException(status_code=404, detail="No test results found")
+        return test_result
+
+@router.delete("/tests/{test_id}", response_model=TestResultsDelete, tags=["pyats"])
+def delete_single_test_result(test_id: int):
+    with Session(engine) as session:
+        statement = select(TestResults).where(TestResults.test_id == test_id)
+        results = session.exec(statement)
+        test_result = results.one()
+        
+        session.delete(test_result)
+        session.commit()
+        
+        if test_result is None:
+            raise HTTPException(status_code=404, detail="No test results found")
+        
         return test_result
