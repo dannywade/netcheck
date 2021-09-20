@@ -95,8 +95,14 @@ async def analysis(request: Request):
 
 @app.post("/validateForm", response_class=HTMLResponse)
 async def validation_results(request: Request, osType: str = Form(...), deviceIp: str = Form(...) ):
-    date = datetime.date
+    current_time = datetime.now()
     
     # TODO: Need to figure out how to run pyATS testscript most efficiently - easypy or standalone
+    # Option #1:
+    # Run pyATS job via Easypy in a subprocess - record stdout
+    # Extract results.json and device .log files
+    # Pull data required for model from results.json and store in DB (TestResults table)
+    # Read data from DB using timestamp
+    # Send response to user using TestResults data model
     
-    return templates.TemplateResponse("results.html", {"request": request, "date": date, "device_ip": deviceIp})
+    return templates.TemplateResponse("results.html", {"request": request, "date": current_time, "device_ip": deviceIp})
