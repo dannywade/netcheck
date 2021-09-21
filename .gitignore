@@ -4,3 +4,5 @@ __pycache__
 */__pycache__
 .pytest_cache
 netcheck/*.db
+temp_results
+pyats_logs

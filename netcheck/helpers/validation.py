@@ -1,4 +1,5 @@
 import os
+from decouple import config
 from datetime import datetime
 import subprocess
 from zipfile import ZipFile
@@ -6,15 +7,39 @@ from time import sleep
 import json
 from genie.utils import Dq
 import shutil
+from genie import testbed
 
 """
 Module used for pyATS functions
 """
-def run_pyats_job(jobfile_name):
+def generate_testbed(device_ip: str, os: str) -> dict:
+    username = config("EVE_USER")
+    password = config("EVE_PW")
+    
+    tb = {
+        "devices": {
+            "uut": {
+                "connections": {
+                    "cli": {"ip": device_ip, "protocol": "ssh", "port": "22"}
+                },
+                "credentials": {
+                    "default": {"username": username, "password": password},
+                },
+                "os": os,
+                "type": "testing_device",
+            }
+        }
+    }
+    
+    # TODO: Need to store testbed for jobfile to read from and load - DB (using data model) or YAML file
+
+    return tb
+
+def run_pyats_job(testbed_file: dict, jobfile_name: str, current_dir: str) -> str:
     """
     Runs pyATS jobfile and stores result in custom archive folder
     """
-    curr_dir = os.path.dirname(os.path.abspath(__file__))
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Get current time
     now = datetime.now()
@@ -23,15 +48,15 @@ def run_pyats_job(jobfile_name):
     archive_dir_name = current_time
     
     # Run the pyATS job via Easypy execution
-    py_run = subprocess.run(args=['pyats', 'run', 'job', jobfile_name, '--no-archive-subdir', '--archive-dir', './pyats_logs', '--archive-name', archive_dir_name])
+    py_run = subprocess.run(args=['pyats', 'run', 'job', jobfile_name, '--testbed-file', testbed_file, '--no-archive-subdir', '--archive-dir', './pyats_logs', '--archive-name', archive_dir_name])
     # Allow time for archive creation
     sleep(3)
     # Return the file path of the archived results
-    results_path = f"{curr_dir}/pyats_logs/{archive_dir_name}.zip"
+    results_path = f"{current_dir}/pyats_logs/{archive_dir_name}.zip"
     
     return results_path
 
-def get_pyats_results(results_path):
+def get_pyats_results(results_path: str) -> dict:
     """
     Extracts the results.json and device CLI log from the archive folder and returns results.json as Python dict
     """
@@ -51,7 +76,7 @@ def get_pyats_results(results_path):
         
         return results_dict
 
-def parse_pyats_results(results_dict):
+def parse_pyats_results(results_dict: dict) -> dict:
     """
     Passes in pyATS job results as a Python dict and returns a dict of parsed values from results
     """
@@ -69,14 +94,14 @@ def parse_pyats_results(results_dict):
 
     return parsed_results
 
-def cleanup_pyats_results():
+def cleanup_pyats_results() -> None:
     """
     Remove the temp directory used to store the pyATS job results
     """
     if os.path.exists("temp_results"):
         print("Temp results directory has been found!")
         # Delete the temp dir and all of its content
-        # shutil.rmtree("temp_results")
+        shutil.rmtree("temp_results")
         print("Temp results directory has been deleted!")
     else:
         print("Temp results directory not found!")
