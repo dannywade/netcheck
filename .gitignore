@@ -6,3 +6,4 @@ __pycache__
 netcheck/*.db
 temp_results
 pyats_logs
+temp_*
