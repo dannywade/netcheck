@@ -13,7 +13,7 @@ import yaml
 from api.api_v1.api import api_router
 from backend.models import TestResults
 from backend.db import create_db_and_tables, engine
-from helpers.validation import generate_testbed, run_pyats_job, get_pyats_results, parse_pyats_results, cleanup_pyats_results, cleanup_pyats_testbed
+from helpers.validation import generate_testbed, run_pyats_job, get_pyats_results, parse_pyats_results, cleanup_pyats_results, cleanup_pyats_testbed, read_device_logs
 
 # Run the app: uvicorn main:app --reload
 
@@ -103,15 +103,9 @@ async def validation_results(request: Request, deviceHostname: str = Form(...), 
     generate_testbed(hostname=deviceHostname, os_type=osType, device_ip=deviceIp)
     job_results = run_pyats_job(jobfile_name="./jobfiles/circuit_jobfile.py", current_dir=app_dir)
     results_dict = get_pyats_results(results_path=job_results)
-    parse_pyats_results(job_results=results_dict)
-    # cleanup_pyats_results()
-    # cleanup_pyats_testbed()
-    # TODO: Need to figure out how to run pyATS testscript most efficiently - easypy or standalone
-    # Option #1:
-    # Run pyATS job via Easypy in a subprocess - record stdout
-    # Extract results.json and device .log files
-    # Pull data required for model from results.json and store in DB (TestResults table)
-    # Read data from DB using timestamp
-    # Send response to user using TestResults data model
+    results_summary = parse_pyats_results(job_results=results_dict)
+    device_logs = read_device_logs()
     
-    return templates.TemplateResponse("results.html", {"request": request, "date": current_time, "device_ip": deviceIp})
+    cleanup_pyats_results()
+    cleanup_pyats_testbed()
+    return templates.TemplateResponse("results.html", {"request": request, "date": current_time, "device_ip": deviceIp, "output": device_logs, **results_summary})

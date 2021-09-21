@@ -107,7 +107,7 @@ def read_device_logs():
     Reads and returns the device logs
     """
     temp_results = os.listdir("./temp_results")
-    for fileName in temp_results.namelist():
+    for fileName in temp_results:
         if '-cli-' in fileName:
             device_log_file = fileName
             print("Device logs file found!")

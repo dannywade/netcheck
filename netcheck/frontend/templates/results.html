@@ -10,9 +10,9 @@
         <div class="card-body">
             <h5 style="display: inline;">Success Rate: </h5><h5 class="text-success">{{ success_rate }}</h5>
             <br>
-            <h5 style="display: inline;">Number of Passes: </h5><h5 class="text-success">{{ passes }}</h5>
-            <h5 style="display: inline;">Number of Errors: </h5><h5 class="text-warning">{{ errors }}</h5>
-            <h5 style="display: inline;">Number of Failures: </h5><h5 class="text-danger">{{ failures }}</h5>
+            <h5 style="display: inline;">Total Number of Tests: </h5><h5>{{ total_tests }}</h5>
+            <h5 style="display: inline;">Number of Passes: </h5><h5 class="text-success">{{ tests_passed }}</h5>
+            <h5 style="display: inline;">Number of Failures: </h5><h5 class="text-danger">{{ tests_failed }}</h5>
         </div>
     </div>
 </div>
@@ -23,7 +23,7 @@
     <h4 class="card-header">Detailed Results:</h4>
     <div class="card-body">
         <div class="form-group">
-            <textarea class="form-control" id="resultsTextarea" rows="3" style="margin-top: 0px; margin-bottom: 0px; margin-left: 20px; max-width: 45rem; height: 30rem;" readonly>
+            <textarea class="form-control" id="resultsTextarea" rows="3" style="margin-top: 0px; margin-bottom: 0px; margin-left: 20px; max-width: 45rem; height: 30rem;">
                 {{ output }}
             </textarea><br><br>
             <button onclick="saveTextAsFile(resultsTextarea.value, '{{ date }}-{{ device_ip }}-results.txt')">Download</button>
