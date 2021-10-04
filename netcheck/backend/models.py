@@ -15,11 +15,14 @@ class TestResultsBase(SQLModel):
     tests_passed: int
     tests_failed: int
 
+
 class TestResults(TestResultsBase, table=True):
     test_id: Optional[int] = Field(default=None, primary_key=True)
 
+
 class TestResultsRead(TestResultsBase):
     test_id: int
+
 
 class TestResultsDelete(TestResultsBase):
     test_id: int

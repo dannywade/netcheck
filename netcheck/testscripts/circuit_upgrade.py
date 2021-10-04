@@ -89,10 +89,10 @@ class CircuitUpgrade(aetest.Testcase):
 
     @aetest.test
     def external_pings(self, steps, device):
-        with steps.start("Pinging Google DNS") as step:
+        with steps.start("Pinging PE peer IP") as step:
             try:
                 if device.os == "iosxe" or "ios":
-                    ping_results = device.api.ping(address="8.8.8.8", count=100)
+                    ping_results = device.api.ping(address="192.168.250.1", count=100)
                 if ping_results:
                     step.passed("Pings were successful!")
                 else:

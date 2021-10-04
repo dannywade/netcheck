@@ -1,5 +1,7 @@
 # NetCheck
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 ## What is NetCheck?
 A tool that allows network engineers to validate common changes and analyze their network using two popular network testing and analysis tools: pyATS and Batfish. NetCheck is built with a web UI and a RESTful API. The goal is to have full feature parity between the web UI and API, so that the user can interact with it however they wish.
 

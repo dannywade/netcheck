@@ -1,35 +1,38 @@
 <html>
-    <head>
-        <title>NetCheck</title>
-        <!-- Darkly bootstrap theme -->
-        <link href="{{ url_for('static', path='/css/bootstrap.css') }}" rel="stylesheet">
-        <!-- jQuery Core 3.6.0 -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <!-- Custom JS file -->
-        <script type="text/javascript" href="{{ url_for('static', path='/js/netcheck.js') }}"></script>
-    </head>
-    <body>
-        <h1 style="margin-left: 20px;">NetCheck</h1>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="collapse navbar-collapse" id="navbarColor01">
-              <ul class="navbar-nav mr-auto">
-                  <a class="nav-link" href="/">Home
-                    <span class="sr-only">(current)</span>
-                  </a>
-                <li class="nav-item">
-                  <a class="nav-link" href="/validation">Validation</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/analysis">Analysis</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/about">About</a>
-                </li>
-              </ul>
-            </div>
-          </nav>
-          <br>
-          {% block content -%}
-          {%- endblock content %}
-    </body>
+
+<head>
+  <title>NetCheck</title>
+  <!-- Darkly bootstrap theme -->
+  <link href="{{ url_for('static', path='/css/bootstrap.css') }}" rel="stylesheet">
+  <!-- jQuery Core 3.6.0 -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- Custom JS file -->
+  <script type="text/javascript" src="{{ url_for('static', path='/js/netcheck.js') }}"></script>
+</head>
+
+<body>
+  <h1 style="margin-left: 20px;">NetCheck</h1>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <a class="nav-link" href="/">Home
+          <span class="sr-only">(current)</span>
+        </a>
+        <li class="nav-item">
+          <a class="nav-link" href="/validation">Validation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/analysis">Analysis</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about">About</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br>
+  {% block content -%}
+  {%- endblock content %}
+</body>
+
 </html>
