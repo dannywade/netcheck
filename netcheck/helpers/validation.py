@@ -95,7 +95,7 @@ def get_pyats_results(results_path: str) -> dict:
         for fileName in results_zip.namelist():
             if "-cli-" in fileName:
                 results_zip.extract(fileName, "temp_results")
-                print("Device logs file found!")
+                print("Device logs file found and stored in temp dir!")
 
         # Open the results.json file and covert to a Python dict
         with open("temp_results/results.json", "r") as results:
@@ -138,7 +138,7 @@ def read_device_logs():
     for fileName in temp_results:
         if "-cli-" in fileName:
             device_log_file = fileName
-            print("Device logs file found!")
+            print("Device logs file found and read from temp dir!")
 
     # Read device log and return it
     with open(f"./temp_results/{device_log_file}") as f:
