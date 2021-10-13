@@ -151,6 +151,12 @@ async def validation_results(
     results_summary = parse_pyats_results(job_results=results_dict)
     device_logs = read_device_logs()
 
+    # Write test results to DB
+    # TODO: Add total_tests to TestResultsBase data model
+    # with Session(engine) as session:
+    #     session.add(results_summary)
+    #     session.commit()
+
     cleanup_pyats_results()
     cleanup_pyats_testbed()
     return templates.TemplateResponse(

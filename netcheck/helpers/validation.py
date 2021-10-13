@@ -111,6 +111,11 @@ def parse_pyats_results(job_results: dict) -> dict:
     # Initialize parsed results dict
     parsed_results = {}
 
+    # TODO:
+    # - Parse out name of test and add to results
+    # - Add datetime to parsed results
+    # - Parse out failure rate of test and add to results
+
     # Find success_rate, total, passed, and failed values under the TestSuite results
     testsuite_results = Dq(job_results).contains_key_value("report", "summary")
     success_rate = testsuite_results.get_values("success_rate")  # float
@@ -120,7 +125,10 @@ def parse_pyats_results(job_results: dict) -> dict:
 
     parsed_results.update(
         {
+            # "name": ,
+            # "executed_at": ,
             "success_rate": success_rate[0],
+            # "failure_rate": ,
             "total_tests": total[0],
             "tests_passed": passed[0],
             "tests_failed": failed[0],
