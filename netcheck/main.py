@@ -46,7 +46,7 @@ def create_test_results():
         name="circuit_upgrade",
         executed_at=current_date,
         success_rate=100.0,
-        failure_rate=0,
+        total_tests=3,
         tests_passed=3,
         tests_failed=0,
     )
@@ -54,7 +54,7 @@ def create_test_results():
         name="wan_check",
         executed_at=current_date,
         success_rate=50.0,
-        failure_rate=50.0,
+        total_tests=4,
         tests_passed=2,
         tests_failed=2,
     )
@@ -62,7 +62,7 @@ def create_test_results():
         name="l2_stp_check",
         executed_at=current_date,
         success_rate=0,
-        failure_rate=100.0,
+        total_tests=3,
         tests_passed=0,
         tests_failed=3,
     )
@@ -98,6 +98,7 @@ def select_test_results():
         # print(results.first())
 
 
+# Used to create dummy records in DB
 create_db_and_tables()
 create_test_results()
 select_test_results()
@@ -151,14 +152,19 @@ async def validation_results(
     results_summary = parse_pyats_results(job_results=results_dict)
     device_logs = read_device_logs()
 
-    # Write test results to DB
-    # TODO: Add total_tests to TestResultsBase data model
-    # with Session(engine) as session:
-    #     session.add(results_summary)
-    #     session.commit()
+    # Save test results summary to the database
+    with Session(engine) as session:
+        session.add(results_summary)
+        session.commit()
+        session.refresh(results_summary)
 
+    # Convert test results to a dictionary to use in HTML J2 template
+    html_results = dict(results_summary)
+
+    # Remove temp files used in testing
     cleanup_pyats_results()
     cleanup_pyats_testbed()
+
     return templates.TemplateResponse(
         "results.html",
         {
@@ -166,6 +172,6 @@ async def validation_results(
             "date": current_time,
             "device_ip": deviceIp,
             "output": device_logs,
-            **results_summary,
+            **html_results,
         },
     )

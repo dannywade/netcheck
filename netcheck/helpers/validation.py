@@ -9,8 +9,8 @@ import json
 from genie.utils import Dq
 import shutil
 from genie import testbed
-import os
 import yaml
+from backend.models import TestResults
 
 """
 Module used for pyATS functions
@@ -104,41 +104,33 @@ def get_pyats_results(results_path: str) -> dict:
         return results_dict
 
 
-def parse_pyats_results(job_results: dict) -> dict:
+def parse_pyats_results(job_results: dict) -> TestResults:
     """
     Passes in pyATS job results as a Python dict and returns a dict of parsed values from results
     """
-    # Initialize parsed results dict
-    parsed_results = {}
-
-    # TODO:
-    # - Parse out name of test and add to results
-    # - Add datetime to parsed results
-    # - Parse out failure rate of test and add to results
 
     # Find success_rate, total, passed, and failed values under the TestSuite results
     testsuite_results = Dq(job_results).contains_key_value("report", "summary")
+    test_name = job_results["report"]["name"]
+    execution_time = job_results["report"]["starttime"]
     success_rate = testsuite_results.get_values("success_rate")  # float
     total = testsuite_results.get_values("total")
     passed = testsuite_results.get_values("passed")
     failed = testsuite_results.get_values("failed")
 
-    parsed_results.update(
-        {
-            # "name": ,
-            # "executed_at": ,
-            "success_rate": success_rate[0],
-            # "failure_rate": ,
-            "total_tests": total[0],
-            "tests_passed": passed[0],
-            "tests_failed": failed[0],
-        }
+    parsed_results = TestResults(
+        name=test_name,
+        executed_at=execution_time,
+        success_rate=success_rate[0],
+        total_tests=total[0],
+        tests_passed=passed[0],
+        tests_failed=failed[0],
     )
 
     return parsed_results
 
 
-def read_device_logs():
+def read_device_logs() -> str:
     """
     Reads and returns the device logs
     """

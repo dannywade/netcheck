@@ -11,9 +11,17 @@ class TestResultsBase(SQLModel):
     name: str
     executed_at: datetime
     success_rate: float
-    failure_rate: float
+    total_tests: int
     tests_passed: int
     tests_failed: int
+
+    def __iter__(self):
+        yield "name", self.name
+        yield "executed_at", self.executed_at
+        yield "success_rate", self.success_rate
+        yield "total_tests", self.total_tests
+        yield "tests_passed", self.tests_passed
+        yield "tests_failed", self.tests_failed
 
 
 class TestResults(TestResultsBase, table=True):

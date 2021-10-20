@@ -10,6 +10,7 @@ def test_api_root():
     assert response.status_code == 200
 
 
+### TESTS FOR PYATS (VALIDATION) ENDPOINTS ###
 def test_api_pyats_test_results():
     response = client.get("/api/v1/pyats/tests")
     assert response.status_code == 200
@@ -17,4 +18,9 @@ def test_api_pyats_test_results():
 
 def test_api_pyats_one_test_result():
     response = client.get("/api/v1/pyats/tests/1")
+    assert response.status_code == 200
+
+
+def test_api_pyats_delete_test_result():
+    response = client.delete("/api/v1/pyats/tests/1")
     assert response.status_code == 200
