@@ -175,3 +175,45 @@ async def validation_results(
             **html_results,
         },
     )
+
+
+@app.post("/validateSwitchInstall", response_class=HTMLResponse)
+async def validation_results(
+    request: Request,
+    switchHostname: str = Form(...),
+    switchOsType: str = Form(...),
+    switchIp: str = Form(...),
+):
+    current_time = datetime.now()
+
+    generate_testbed(hostname=switchHostname, os_type=switchOsType, device_ip=switchIp)
+    job_results = run_pyats_job(
+        jobfile_name="./jobfiles/switch_install_jobfile.py", current_dir=app_dir
+    )
+    results_dict = get_pyats_results(results_path=job_results)
+    results_summary = parse_pyats_results(job_results=results_dict)
+    device_logs = read_device_logs()
+
+    # Save test results summary to the database
+    with Session(engine) as session:
+        session.add(results_summary)
+        session.commit()
+        session.refresh(results_summary)
+
+    # Convert test results to a dictionary to use in HTML J2 template
+    html_results = dict(results_summary)
+
+    # Remove temp files used in testing
+    # cleanup_pyats_results()
+    # cleanup_pyats_testbed()
+
+    return templates.TemplateResponse(
+        "results.html",
+        {
+            "request": request,
+            "date": current_time,
+            "device_ip": switchIp,
+            "output": device_logs,
+            **html_results,
+        },
+    )
