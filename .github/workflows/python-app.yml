@@ -34,6 +34,9 @@ jobs:
     - name: Test with pytest
       run: |
         PYTHONPATH=./netcheck pytest
+    - name: Run gcov
+      run: |
+        gcov .
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v2
       with:
