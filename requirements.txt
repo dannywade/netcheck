@@ -10,6 +10,7 @@ cffi==1.14.6
 chardet==4.0.0
 charset-normalizer==2.0.4
 click==8.0.1
+coverage==6.0.2
 cryptography==3.4.8
 dill==0.3.4
 distro==1.6.0
@@ -57,6 +58,7 @@ pydantic==1.8.2
 pyftpdlib==1.5.6
 pyparsing==2.4.7
 pytest==6.2.5
+pytest-cov==3.0.0
 python-decouple==3.4
 python-engineio==3.14.2
 python-multipart==0.0.5
@@ -72,6 +74,7 @@ sqlmodel==0.0.4
 starlette==0.14.2
 tftpy==0.8.0
 toml==0.10.2
+tomli==1.2.2
 tqdm==4.62.3
 typing-extensions==3.10.0.2
 unicon==21.8
