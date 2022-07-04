@@ -1,0 +1,40 @@
+#modules {
+    padding: 20px;
+    background: rgba(238, 238, 238, 0.281);
+    margin-bottom: 20px;
+    z-index: 1;
+    border-radius: 10px;
+}
+
+#dropzone {
+    padding: 20px;
+    background: rgba(238, 238, 238, 0.281);
+    min-height: 100px;
+    margin-bottom: 20px;
+    z-index: 0;
+    border-radius: 10px;
+}
+
+.active {
+    outline: 1px solid red;
+}
+
+.hover {
+    outline: 1px solid blue;
+}
+
+.drop-item {
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: rgba(238, 238, 238, 0.281);
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid rgba(238, 238, 238, 0.281);
+    position: relative;
+}
+
+.drop-item .remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}

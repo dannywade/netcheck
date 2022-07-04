@@ -1,3 +1,5 @@
+import ast
+import uuid
 from fastapi import FastAPI, Request, Form
 from fastapi.params import Form
 from fastapi.staticfiles import StaticFiles
@@ -129,11 +131,14 @@ async def about(request: Request):
 async def post_checks(request: Request):
     return templates.TemplateResponse("validation.html", {"request": request})
 
+@app.get("/custom-validation", response_class=HTMLResponse)
+async def custom_checks(request: Request):
+    return templates.TemplateResponse("custom_validation.html", {"request": request})
+
 
 @app.get("/analysis", response_class=HTMLResponse)
 async def analysis(request: Request):
     return templates.TemplateResponse("analysis.html", {"request": request})
-
 
 @app.post("/validateForm", response_class=HTMLResponse)
 async def validation_results(
@@ -217,3 +222,23 @@ async def validation_results(
             **html_results,
         },
     )
+
+@app.post("/custom-post")
+async def custom_validation(request: Request):
+    # Receive data via XMLHttpRequest
+    test_names = await request.body()
+    # Convert bytes to Python dict for further parsing
+    dict_convert = test_names.decode("UTF-8")
+    my_data = ast.literal_eval(dict_convert)
+
+    # TODO: Figure out better way to validate data (maybe in JS?)
+    if not my_data["test_name"] and not my_data["tests"]:
+        print("Form data was empty!")
+        raise ValueError("Form was empty")
+
+    # Create random ID for tests without user-provided test name
+    if not my_data["test_name"]:
+        my_data["test_name"] = str(uuid.uuid4())
+    print(my_data)
+
+    # TODO: Store test details (name + test names) into redis/db for further processing and run tests

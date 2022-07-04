@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<body>
+    <div class="container">
+        <h1>Custom Validation</h1>
+        <input class="form-control" type="text" id="testName" placeholder="Name of Test" />
+        <br>
+        <div class="row">
+            <div class="col-sm-6">
+                <div id="modules">
+                    <p class="drag"><a class="btn btn-light">Environment (CPU, Memory, etc.)</a></p>
+
+                    <p class="drag"><a class="btn btn-light">BGP Routing</a></p>
+
+                    <p class="drag"><a class="btn btn-light">OSPF Routing</a></p>
+                </div>
+            </div>
+
+
+            <div class="col-sm-6">
+                <div id="dropzone"></div>
+                <button class="btn btn-primary pull-right" onclick="sendTestDetails()">Save</button>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
