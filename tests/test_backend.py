@@ -1,8 +1,13 @@
+from datetime import datetime
 from fastapi.testclient import TestClient
-from netcheck.main import app
+from netcheck.main import app, create_test_results
+from netcheck.backend.db import create_db_and_tables
 
 # Initialize the test client
 client = TestClient(app)
+# Create test DB and dummy entries
+create_db_and_tables()
+create_test_results()
 
 # Testing the API
 def test_api_root():
