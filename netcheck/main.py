@@ -6,11 +6,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from sqlalchemy.future import select
-from sqlmodel import SQLModel, Session
+from sqlmodel import Session
 import os
-import shutil
 from datetime import datetime
-import yaml
+from rq import Queue
+from rq.job import Job
 
 # Local imports
 from api.api_v1.api import api_router
@@ -25,6 +25,8 @@ from helpers.validation import (
     cleanup_pyats_testbed,
     read_device_logs,
 )
+from tasks import run_network_test
+from worker import conn
 
 # Run the app: uvicorn main:app --reload
 
@@ -33,6 +35,9 @@ app_dir = os.path.dirname(__file__)
 api_description = "API used to validate and performs tests against your network"
 
 app = FastAPI(description=api_description, version="V1", title="NetCheck API")
+
+# Initializes RQ queue and connects to Redis
+q = Queue(connection=conn)  # no args implies the default queue
 
 # Initialize the SQLite DB
 @app.on_event("startup")
@@ -100,10 +105,10 @@ def select_test_results():
         # print(results.first())
 
 
-# Used to create dummy records in DB
-create_db_and_tables()
-create_test_results()
-select_test_results()
+# For Testing - Used to create dummy records in DB
+# create_db_and_tables()
+# create_test_results()
+# select_test_results()
 
 # API router
 app.include_router(api_router, prefix="/api/v1")
@@ -242,3 +247,9 @@ async def custom_validation(request: Request):
     print(my_data)
 
     # TODO: Store test details (name + test names) into redis/db for further processing and run tests
+    # TODO: Replace static arg values with variables again
+    generate_testbed(hostname="csr1000v-1", os_type="iosxe", device_ip="131.226.217.143")
+    job = q.enqueue(run_network_test, job_timeout="3m")
+
+    # TODO: Provide some additional feedback in logs on job status
+    print("Job is being processed!")

@@ -87,20 +87,20 @@ class CircuitUpgrade(aetest.Testcase):
                     f"Could not parse data due to the following error: {str(e)}"
                 )
 
-    @aetest.test
-    def external_pings(self, steps, device):
-        with steps.start("Pinging PE peer IP") as step:
-            try:
-                if device.os == "iosxe" or "ios":
-                    ping_results = device.api.ping(address="192.168.250.1", count=100)
-                if ping_results:
-                    step.passed("Pings were successful!")
-                else:
-                    step.failed("Pings were not successful :(")
-            except Exception as e:
-                self.failed(
-                    f"Could not parse data due to the following error: {str(e)}"
-                )
+    # @aetest.test
+    # def external_pings(self, steps, device):
+    #     with steps.start("Pinging PE peer IP") as step:
+    #         try:
+    #             if device.os == "iosxe" or "ios":
+    #                 ping_results = device.api.ping(address="192.168.250.1", count=100)
+    #             if ping_results:
+    #                 step.passed("Pings were successful!")
+    #             else:
+    #                 step.failed("Pings were not successful :(")
+    #         except Exception as e:
+    #             self.failed(
+    #                 f"Could not parse data due to the following error: {str(e)}"
+    #             )
 
     @aetest.test
     def gather_logs(self, steps, device):

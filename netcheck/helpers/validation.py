@@ -27,8 +27,8 @@ def generate_testbed(hostname: str, device_ip: str, os_type: str) -> None:
                 },
                 "credentials": {
                     "default": {
-                        "username": "%ENV{EVE_USER}",
-                        "password": "%ENV{EVE_PW}",
+                        "username": "developer", # Hardcoded for testing only. Need to change back to env var
+                        "password": "C1sco12345",
                     },
                 },
                 "os": os_type,
@@ -61,6 +61,7 @@ def run_pyats_job(jobfile_name: str, current_dir: str) -> str:
 
     archive_dir_name = current_time
 
+
     # Run the pyATS job via Easypy execution
     py_run = subprocess.run(
         args=[
@@ -70,7 +71,7 @@ def run_pyats_job(jobfile_name: str, current_dir: str) -> str:
             jobfile_name,
             "--no-archive-subdir",
             "--archive-dir",
-            "./pyats_logs",
+            f"{current_dir}/pyats_logs",
             "--archive-name",
             archive_dir_name,
         ]
