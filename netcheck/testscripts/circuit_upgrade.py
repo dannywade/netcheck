@@ -110,7 +110,7 @@ class CircuitUpgrade(aetest.Testcase):
                     log_results = device.api.get_logging_logs()
                 elif device.os == "ios":
                     log_results = device.parse("show logging")
-                error_logs = log_results.q.contains_key_value(
+                error_logs = log_results.contains_key_value(
                     "level", "error"
                 ).get_values("messages_logged")
                 if not error_logs:

@@ -1,6 +1,4 @@
-from genericpath import exists
 import os
-from decouple import config
 from datetime import datetime
 import subprocess
 from zipfile import ZipFile
