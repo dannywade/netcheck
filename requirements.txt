@@ -36,6 +36,7 @@ grpcio==1.47.0
 h11==0.13.0
 idna==3.3
 importlib-metadata==4.12.0
+iniconfig==1.1.1
 itsdangerous==2.1.2
 Jinja2==3.1.2
 jsonpickle==2.2.0
@@ -48,9 +49,11 @@ netaddr==0.8.0
 packaging==21.3
 paramiko==2.11.0
 pathspec==0.9.0
+pluggy==1.0.0
 prettytable==3.3.0
 protobuf==3.20.1
 psutil==5.9.1
+py==1.11.0
 pyats==22.6
 pyats.aereport==22.6
 pyats.aetest==22.6
@@ -70,6 +73,7 @@ pydantic==1.9.1
 pyftpdlib==1.5.6
 PyNaCl==1.5.0
 pyparsing==3.0.9
+pytest==7.1.2
 python-dateutil==2.8.2
 python-dotenv==0.20.0
 python-engineio==3.14.2
@@ -90,6 +94,7 @@ sqlalchemy2-stubs==0.0.2a24
 sqlmodel==0.0.6
 starlette==0.19.1
 tftpy==0.8.0
+tomli==2.0.1
 tqdm==4.64.0
 typing_extensions==4.3.0
 unicon==22.6
