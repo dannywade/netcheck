@@ -103,14 +103,15 @@ def get_pyats_results(results_path: str) -> dict:
         return results_dict
 
 
-def parse_pyats_results(job_results: dict) -> TestResults:
+def parse_pyats_results(job_results: dict, test_name: str = None) -> TestResults:
     """
     Passes in pyATS job results as a Python dict and returns a dict of parsed values from results
     """
 
     # Find success_rate, total, passed, and failed values under the TestSuite results
     testsuite_results = Dq(job_results).contains_key_value("report", "summary")
-    test_name = job_results["report"]["name"]
+    if test_name is None:
+        test_name = job_results["report"]["name"]
     execution_time = job_results["report"]["starttime"]
     success_rate = testsuite_results.get_values("success_rate")  # float
     total = testsuite_results.get_values("total")

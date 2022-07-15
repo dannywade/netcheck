@@ -6,7 +6,7 @@ import os
 
 app_dir = os.path.dirname(__file__)
 
-def run_network_test():
+def run_network_test(test_name: str = None):
     current_time = datetime.now()
 
     # TODO: Change jobfile name and pass in test name from user
@@ -15,7 +15,7 @@ def run_network_test():
     )
 
     results_dict = get_pyats_results(results_path=job_results)
-    results_summary = parse_pyats_results(job_results=results_dict)
+    results_summary = parse_pyats_results(job_results=results_dict, test_name=test_name)
     # device_logs = read_device_logs()
 
     # Save test results summary to the database

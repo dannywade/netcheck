@@ -145,6 +145,16 @@ async def custom_checks(request: Request):
 async def analysis(request: Request):
     return templates.TemplateResponse("analysis.html", {"request": request})
 
+@app.get("/custom-results", response_class=HTMLResponse)
+async def analysis(request: Request):
+    return templates.TemplateResponse("custom_results.html", {"request": request})
+
+@app.get("/partials/results-table", response_class=HTMLResponse)
+async def analysis(request: Request):
+    with Session(engine) as session:
+        all_test_results = session.exec(select(TestResults)).all()
+    return templates.TemplateResponse("partial_results_table.html", {"request": request, "results": all_test_results})
+
 @app.post("/validateForm", response_class=HTMLResponse)
 async def validation_results(
     request: Request,
@@ -249,7 +259,7 @@ async def custom_validation(request: Request):
     # TODO: Store test details (name + test names) into redis/db for further processing and run tests
     # TODO: Replace static arg values with variables again
     generate_testbed(hostname="csr1000v-1", os_type="iosxe", device_ip="131.226.217.143")
-    job = q.enqueue(run_network_test, job_timeout="3m")
+    job = q.enqueue(run_network_test, test_name=my_data["test_name"], job_timeout="3m")
 
     # TODO: Provide some additional feedback in logs on job status
     print("Job is being processed!")
