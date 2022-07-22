@@ -14,7 +14,7 @@ from rq.job import Job
 
 # Local imports
 from api.api_v1.api import api_router
-from backend.models import TestResults
+from backend.models import TestResults, DeviceInventory
 from backend.db import create_db_and_tables, engine
 from helpers.validation import (
     generate_testbed,
@@ -73,11 +73,29 @@ def create_test_results():
         tests_passed=0,
         tests_failed=3,
     )
+    result4 = DeviceInventory(
+        hostname="RT-1",
+        mgmt_ip="10.1.1.1",
+        vendor="cisco",
+        model="9500",
+        os_version="17.6.6",
+        serial_number="ABC1234"
+    )
+    result5 = DeviceInventory(
+        hostname="SW-1",
+        mgmt_ip="10.1.1.2",
+        vendor="cisco",
+        model="9600",
+        os_version="16.8.5",
+        serial_number="ZYX6789"
+    )
 
     with Session(engine) as session:
         session.add(result1)
         session.add(result2)
         session.add(result3)
+        session.add(result4)
+        session.add(result5)
 
         session.commit()
 
@@ -107,7 +125,7 @@ def select_test_results():
 
 # For Testing - Used to create dummy records in DB
 # create_db_and_tables()
-# create_test_results()
+create_test_results()
 # select_test_results()
 
 # API router
@@ -131,6 +149,9 @@ async def index(request: Request):
 async def about(request: Request):
     return templates.TemplateResponse("about.html", {"request": request})
 
+@app.get("/inventory", response_class=HTMLResponse)
+async def post_checks(request: Request):
+    return templates.TemplateResponse("inventory.html", {"request": request})
 
 @app.get("/validation", response_class=HTMLResponse)
 async def post_checks(request: Request):
@@ -139,7 +160,6 @@ async def post_checks(request: Request):
 @app.get("/custom-validation", response_class=HTMLResponse)
 async def custom_checks(request: Request):
     return templates.TemplateResponse("custom_validation.html", {"request": request})
-
 
 @app.get("/analysis", response_class=HTMLResponse)
 async def analysis(request: Request):
@@ -154,6 +174,12 @@ async def analysis(request: Request):
     with Session(engine) as session:
         all_test_results = session.exec(select(TestResults)).all()
     return templates.TemplateResponse("partial_results_table.html", {"request": request, "results": all_test_results})
+
+@app.get("/partials/inventory-table", response_class=HTMLResponse)
+async def analysis(request: Request):
+    with Session(engine) as session:
+        all_test_results = session.exec(select(DeviceInventory)).all()
+    return templates.TemplateResponse("partial_inventory_table.html", {"request": request, "results": all_test_results})
 
 @app.post("/validateForm", response_class=HTMLResponse)
 async def validation_results(

@@ -1,5 +1,4 @@
 from typing import Optional
-from sqlalchemy.sql.expression import table
 from sqlmodel import Field, SQLModel
 from datetime import datetime
 
@@ -34,3 +33,15 @@ class TestResultsRead(TestResultsBase):
 
 class TestResultsDelete(TestResultsBase):
     test_id: int
+
+class InventoryBase(SQLModel):
+    hostname: str
+    mgmt_ip: str
+    vendor: str
+    model: str
+    os_version: str
+    serial_number: str
+
+
+class DeviceInventory(InventoryBase, table=True):
+    device_id: Optional[int] = Field(default=None, primary_key=True)
