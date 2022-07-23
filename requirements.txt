@@ -36,7 +36,7 @@ genie.libs.filetransferutils==22.6
 genie.libs.health==22.6
 genie.libs.ops==22.6
 genie.libs.parser==22.6
-genie.libs.robot==22.6
+# genie.libs.robot==22.6 - not needed, was causing dependency conflict
 genie.libs.sdk==22.6
 genie.telemetry==22.6
 genie.trafficgen==22.6
