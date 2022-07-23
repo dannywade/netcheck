@@ -3,18 +3,19 @@ from sqlmodel import Session, select
 from typing import List
 from backend.models import TestResults, TestResultsRead, TestResultsDelete
 from backend.db import engine
+from fastapi_pagination import Page, add_pagination, paginate
 
 router = APIRouter()
 
 
-@router.get("/tests", response_model=List[TestResultsRead], tags=["pyats"])
+@router.get("/tests", response_model=Page[TestResultsRead], tags=["validation"])
 def get_test_results():
     with Session(engine) as session:
         results = session.exec(select(TestResults)).all()
-        return results
+        return paginate(results)
 
 
-@router.get("/tests/{test_id}", response_model=TestResultsRead, tags=["pyats"])
+@router.get("/tests/{test_id}", response_model=TestResultsRead, tags=["validation"])
 def get_single_test_result(test_id: int):
     with Session(engine) as session:
         test_result = session.get(TestResults, test_id)
@@ -23,7 +24,9 @@ def get_single_test_result(test_id: int):
         return test_result
 
 
-@router.delete("/tests/{test_id}", response_model=TestResultsDelete, tags=["pyats"])
+@router.delete(
+    "/tests/{test_id}", response_model=TestResultsDelete, tags=["validation"]
+)
 def delete_single_test_result(test_id: int):
     with Session(engine) as session:
         statement = select(TestResults).where(TestResults.test_id == test_id)
@@ -37,3 +40,6 @@ def delete_single_test_result(test_id: int):
             raise HTTPException(status_code=404, detail="No test results found")
 
         return test_result
+
+
+add_pagination(router)
