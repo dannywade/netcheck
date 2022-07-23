@@ -6,10 +6,34 @@
       <div class="card border-primary mb-3" style="margin-left: 20px;">
           <div class="card-header"></div>
             <div class="card-body">
-              <h4 class="card-title">Device Inventory</h4>
-              <p class="card-text">
-                <div hx-get="/partials/inventory-table" hx-trigger="load, every 5s">
-                </div>
+              <h4 class="card-title">Device Inventory
+                <span class="htmx-indicator"> 
+                  <img src="/frontend/static/img/bars.svg" width="20px" height="20px"/> Searching... 
+                </span> 
+              </h4>
+              <input class="form-control" type="search" 
+                name="search" placeholder="Begin Typing To Search Devices..."
+                hx-post="/search-inventory" 
+                hx-trigger="load, keyup changed delay:500ms, search" 
+                hx-target="#search-results" 
+                hx-indicator=".htmx-indicator">
+                <p class="card-text">
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Hostname</th>
+                        <th scope="col">Mgmt IP</th>
+                        <th scope="col">Vendor</th>
+                        <th scope="col">Model</th>
+                        <th scope="col">OS Version</th>
+                        <th scope="col">Serial Number</th>
+                    </tr>
+                    </thead>
+                    <tbody id="search-results">
+                      <!-- <div hx-get="/partials/inventory-table" hx-trigger="load">
+                      </div> -->
+                    </tbody>
+                </table>
               </p>
             </div>
       </div>

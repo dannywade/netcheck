@@ -194,14 +194,25 @@ async def results_table(request: Request):
     )
 
 
-@app.get("/partials/inventory-table", response_class=HTMLResponse)
-async def inventory_table(request: Request):
-    with Session(engine) as session:
-        all_test_results = session.exec(select(DeviceInventory)).all()
-    return templates.TemplateResponse(
-        "partial_inventory_table.html",
-        {"request": request, "results": all_test_results},
-    )
+@app.post("/search-inventory", response_class=HTMLResponse)
+async def inventory_table(request: Request, search: str = Form(None)):
+    if search is None:
+        with Session(engine) as session:
+            results = session.exec(select(DeviceInventory)).all()
+            return templates.TemplateResponse(
+                "partial_inventory_table.html",
+                {"request": request, "results": results},
+            )
+    else:
+        with Session(engine) as session:
+            search_match = select(DeviceInventory).where(
+                DeviceInventory.hostname.like("%" + search + "%")
+            )
+            results = session.exec(search_match)
+            return templates.TemplateResponse(
+                "partial_inventory_table.html",
+                {"request": request, "results": results},
+            )
 
 
 @app.post("/validateForm", response_class=HTMLResponse)

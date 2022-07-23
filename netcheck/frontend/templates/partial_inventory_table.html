@@ -1,24 +1,10 @@
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th scope="col">Hostname</th>
-            <th scope="col">Mgmt IP</th>
-            <th scope="col">Vendor</th>
-            <th scope="col">Model</th>
-            <th scope="col">OS Version</th>
-            <th scope="col">Serial Number</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for result in results -%}
-        <tr>
-            <td>{{ result.DeviceInventory.hostname }}</td>
-            <td>{{ result.DeviceInventory.mgmt_ip }}</td>
-            <td>{{ result.DeviceInventory.vendor }}</td>
-            <td>{{ result.DeviceInventory.model }}</td>
-            <td>{{ result.DeviceInventory.os_version }}</td>
-            <td>{{ result.DeviceInventory.serial_number }}</td>
-        </tr>
-        {% endfor -%}
-    </tbody>
-</table>
+{% for result in results -%}
+<tr>
+    <td>{{ result.DeviceInventory.hostname }}</td>
+    <td>{{ result.DeviceInventory.mgmt_ip }}</td>
+    <td>{{ result.DeviceInventory.vendor }}</td>
+    <td>{{ result.DeviceInventory.model }}</td>
+    <td>{{ result.DeviceInventory.os_version }}</td>
+    <td>{{ result.DeviceInventory.serial_number }}</td>
+</tr>
+{% endfor -%}
