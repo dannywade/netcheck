@@ -34,6 +34,7 @@ class TestResultsRead(TestResultsBase):
 class TestResultsDelete(TestResultsBase):
     test_id: int
 
+
 class InventoryBase(SQLModel):
     hostname: str
     mgmt_ip: str

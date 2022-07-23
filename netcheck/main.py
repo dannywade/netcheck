@@ -1,5 +1,6 @@
 import ast
 import uuid
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Form
 from fastapi.params import Form
 from fastapi.staticfiles import StaticFiles
@@ -25,8 +26,12 @@ from helpers.validation import (
     cleanup_pyats_testbed,
     read_device_logs,
 )
+from inventory import device_connection, discover_device
 from tasks import run_network_test
 from worker import conn
+
+# Load .env values
+load_dotenv()
 
 # Run the app: uvicorn main:app --reload
 
@@ -43,6 +48,8 @@ q = Queue(connection=conn)  # no args implies the default queue
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+    # Add dummy records for testing
+    create_test_results()
 
 
 # Adds data in as rows
@@ -79,7 +86,7 @@ def create_test_results():
         vendor="cisco",
         model="9500",
         os_version="17.6.6",
-        serial_number="ABC1234"
+        serial_number="ABC1234",
     )
     result5 = DeviceInventory(
         hostname="SW-1",
@@ -87,7 +94,7 @@ def create_test_results():
         vendor="cisco",
         model="9600",
         os_version="16.8.5",
-        serial_number="ZYX6789"
+        serial_number="ZYX6789",
     )
 
     with Session(engine) as session:
@@ -125,7 +132,7 @@ def select_test_results():
 
 # For Testing - Used to create dummy records in DB
 # create_db_and_tables()
-create_test_results()
+# create_test_results()
 # select_test_results()
 
 # API router
@@ -149,37 +156,53 @@ async def index(request: Request):
 async def about(request: Request):
     return templates.TemplateResponse("about.html", {"request": request})
 
+
 @app.get("/inventory", response_class=HTMLResponse)
-async def post_checks(request: Request):
-    return templates.TemplateResponse("inventory.html", {"request": request})
+async def inventory(request: Request):
+    add_status = None
+    return templates.TemplateResponse(
+        "inventory.html", {"request": request, "add_status": add_status}
+    )
+
 
 @app.get("/validation", response_class=HTMLResponse)
 async def post_checks(request: Request):
     return templates.TemplateResponse("validation.html", {"request": request})
 
+
 @app.get("/custom-validation", response_class=HTMLResponse)
 async def custom_checks(request: Request):
     return templates.TemplateResponse("custom_validation.html", {"request": request})
+
 
 @app.get("/analysis", response_class=HTMLResponse)
 async def analysis(request: Request):
     return templates.TemplateResponse("analysis.html", {"request": request})
 
+
 @app.get("/custom-results", response_class=HTMLResponse)
-async def analysis(request: Request):
+async def custom_results(request: Request):
     return templates.TemplateResponse("custom_results.html", {"request": request})
 
+
 @app.get("/partials/results-table", response_class=HTMLResponse)
-async def analysis(request: Request):
+async def results_table(request: Request):
     with Session(engine) as session:
         all_test_results = session.exec(select(TestResults)).all()
-    return templates.TemplateResponse("partial_results_table.html", {"request": request, "results": all_test_results})
+    return templates.TemplateResponse(
+        "partial_results_table.html", {"request": request, "results": all_test_results}
+    )
+
 
 @app.get("/partials/inventory-table", response_class=HTMLResponse)
-async def analysis(request: Request):
+async def inventory_table(request: Request):
     with Session(engine) as session:
         all_test_results = session.exec(select(DeviceInventory)).all()
-    return templates.TemplateResponse("partial_inventory_table.html", {"request": request, "results": all_test_results})
+    return templates.TemplateResponse(
+        "partial_inventory_table.html",
+        {"request": request, "results": all_test_results},
+    )
+
 
 @app.post("/validateForm", response_class=HTMLResponse)
 async def validation_results(
@@ -264,6 +287,7 @@ async def validation_results(
         },
     )
 
+
 @app.post("/custom-post")
 async def custom_validation(request: Request):
     # Receive data via XMLHttpRequest
@@ -284,8 +308,42 @@ async def custom_validation(request: Request):
 
     # TODO: Store test details (name + test names) into redis/db for further processing and run tests
     # TODO: Replace static arg values with variables again
-    generate_testbed(hostname="csr1000v-1", os_type="iosxe", device_ip="131.226.217.143")
+    generate_testbed(
+        hostname="csr1000v-1", os_type="iosxe", device_ip="131.226.217.143"
+    )
     job = q.enqueue(run_network_test, test_name=my_data["test_name"], job_timeout="3m")
 
     # TODO: Provide some additional feedback in logs on job status
     print("Job is being processed!")
+
+
+@app.post("/addDevice", response_class=HTMLResponse)
+async def add_inventory_device(
+    request: Request,
+    deviceHostname: str = Form(...),
+    deviceIp: str = Form(...),
+):
+    creds = {"username": os.getenv("NC_USER"), "password": os.getenv("NC_PASSWORD")}
+    # May make this an async task to allow for quicker response to user
+    device = device_connection(deviceIp, creds)
+    if device is not None:
+        device_record = discover_device(device)
+        # If hostname isn't discovered, use the user's form input
+        if device_record.hostname is None:
+            device_record.hostname = deviceHostname
+    else:
+        device_record = None
+
+    if device_record is not None:
+        # Save device to the device inventory table
+        with Session(engine) as session:
+            session.add(device_record)
+            session.commit()
+            session.refresh(device_record)
+            add_status = True
+    else:
+        add_status = False
+
+    return templates.TemplateResponse(
+        "inventory.html", {"request": request, "add_status": add_status}
+    )
