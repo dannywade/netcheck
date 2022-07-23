@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from sqlmodel import Session, select
-from typing import List
 from backend.models import TestResults, TestResultsRead, TestResultsDelete
 from backend.db import engine
 from fastapi_pagination import Page, add_pagination, paginate
+from starlette.status import HTTP_204_NO_CONTENT
 
 router = APIRouter()
 
@@ -39,7 +39,7 @@ def delete_single_test_result(test_id: int):
         if test_result is None:
             raise HTTPException(status_code=404, detail="No test results found")
 
-        return test_result
+        return Response(status_code=HTTP_204_NO_CONTENT)
 
 
 add_pagination(router)
