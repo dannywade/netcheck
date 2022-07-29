@@ -9,4 +9,5 @@ temp_results
 pyats_logs
 temp_*
 .vscode
-.coverage
+.coverage*
+*.db

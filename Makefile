@@ -1,8 +1,8 @@
 .PHONY: test rm_db
 
-rm_db: test
+rm_db:
 	rm database.db
 	echo "Test database deleted..."
 
-test:
-	PYTHONPATH=./netcheck pytest
+test: rm_db
+	PYTHONPATH=./netcheck pytest --cov

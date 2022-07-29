@@ -7,7 +7,7 @@ from netmiko.ssh_autodetect import SSHDetect
 from backend.models import DeviceInventory
 
 
-def device_connection(ip_addr: str, credentials: dict) -> str:
+def device_connection(ip_addr: str, credentials: dict) -> ConnectHandler:
     remote_device = {
         "device_type": "autodetect",
         "host": ip_addr,

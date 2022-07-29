@@ -109,6 +109,43 @@ def create_test_results():
         session.refresh(result1)
 
 
+# Adds data in as rows
+def create_inventory_devices():
+    result1 = DeviceInventory(
+        hostname="RT-1",
+        mgmt_ip="10.1.1.1",
+        vendor="cisco",
+        model="9200",
+        os_version="17.3.3",
+        serial_number="ABCD12345",
+    )
+    result2 = DeviceInventory(
+        hostname="RT-2",
+        mgmt_ip="10.1.1.2",
+        vendor="cisco",
+        model="9300",
+        os_version="17.3.4a",
+        serial_number="ABCD12346",
+    )
+    result3 = DeviceInventory(
+        hostname="RT-3",
+        mgmt_ip="10.1.1.3",
+        vendor="cisco",
+        model="9400",
+        os_version="17.8.8",
+        serial_number="QWERTY4321",
+    )
+
+    with Session(engine) as session:
+        session.add(result1)
+        session.add(result2)
+        session.add(result3)
+
+        session.commit()
+
+        session.refresh(result1)
+
+
 def select_test_results():
     with Session(engine) as session:
         # Filter to test results with 100% success rate
