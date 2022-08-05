@@ -21,8 +21,36 @@
 
             <div class="col-sm-6">
                 <div id="dropzone"></div>
-                <button class="btn btn-primary pull-right" onclick="sendTestDetails()">Save</button>
+                <button class="btn btn-primary pull-right" id="runTest" onclick="sendTestDetails()">Run Test</button>
+                <span id="testMessage"></span>
             </div>
+            <script>
+                $(document).ready(function () {
+
+                    function toggleText(ele) {
+                        // remove text if present
+                        if ($(ele).html) {
+                            $(ele).html('');
+                        } else {
+                            $(ele).html('<p>Test has started!</p>');
+                        }
+                    }
+
+                    var enableSubmit = function(ele) {
+                        $(ele).removeAttr("disabled");
+                        toggleText('#testMessage');
+                    }
+
+                    $("#runTest").click(function() {
+                        var that = this;
+                        $(this).attr("disabled", true);
+                        // alert user that test has started
+                        // TODO: may want to add conditional to ensure test name array isn't empty
+                        $('#testMessage').html('<p>Test has started!</p>');
+                        setTimeout(function() { enableSubmit(that) }, 2000);
+                    });
+                });
+            </script>
         </div>
     </div>
 </body>
