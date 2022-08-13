@@ -27,7 +27,7 @@ from helpers.validation import (
     read_device_logs,
 )
 from inventory import device_connection, discover_device
-from tasks import run_network_test
+from tasks import run_network_tests
 from worker import conn
 
 # Load .env values
@@ -359,7 +359,14 @@ async def custom_validation(request: Request):
     generate_testbed(
         hostname="csr1000v-1", os_type="iosxe", device_ip="131.226.217.143"
     )
-    job = q.enqueue(run_network_test, test_name=my_data["test_name"], job_timeout="3m")
+
+    # Pass in list of tests from frontend and execute testscript(s) via pyATS Easypy
+    job = q.enqueue(
+        run_network_tests,
+        test_name=my_data["test_name"],
+        tests=my_data["tests"],
+        job_timeout="3m",
+    )
 
     # TODO: Provide some additional feedback in logs on job status
     print("Job is being processed!")

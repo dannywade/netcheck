@@ -14,6 +14,13 @@ from backend.models import TestResults
 Module used for pyATS functions
 """
 
+# Maps frontend values to testscript names for custom validation testing
+TASK_ID_MAPPER = {
+    "Environment (CPU, Memory, etc.)": "environment",
+    "BGP Routing": "routing_bgp",
+    "OSPF Routing": "routing_ospf",
+}
+
 
 def generate_testbed(hostname: str, device_ip: str, os_type: str) -> None:
 
@@ -66,6 +73,50 @@ def run_pyats_job(jobfile_name: str, current_dir: str) -> str:
             "run",
             "job",
             jobfile_name,
+            "--no-archive-subdir",
+            "--archive-dir",
+            f"{current_dir}/pyats_logs",
+            "--archive-name",
+            archive_dir_name,
+        ]
+    )
+    # Allow time for archive creation
+    sleep(3)
+    # Return the file path of the archived results
+    results_path = f"{current_dir}/pyats_logs/{archive_dir_name}.zip"
+
+    return results_path
+
+
+def run_custom_pyats_job(tests: list, current_dir: str) -> str:
+    """
+    Runs pyATS jobfile and stores result in custom archive folder
+    """
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Get current time
+    now = datetime.now()
+    current_time = now.strftime("%Y%b%d-%H:%M")
+
+    archive_dir_name = current_time
+
+    # Map to proper testscript names and format to fit pyATS logic string input as CLI arg
+    test_names = []
+    for t in tests:
+        true_name = TASK_ID_MAPPER.get(t, None)
+        test_names.append("'" + true_name + "'")
+
+    if not test_names:
+        raise IndexError("No task IDs passed to Easypy.")
+    # Run the pyATS job via Easypy execution
+    py_run = subprocess.run(
+        args=[
+            "pyats",
+            "run",
+            "job",
+            "./jobfiles/custom_jobfile.py",
+            "--task-uids",
+            f"Or({', '.join(str(x) for x in test_names)})",
             "--no-archive-subdir",
             "--archive-dir",
             f"{current_dir}/pyats_logs",
