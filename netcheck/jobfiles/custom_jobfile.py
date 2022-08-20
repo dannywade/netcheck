@@ -9,20 +9,7 @@ def main(runtime):
     temp_tb = "./temp_testbed/testbed.yaml"
     loaded_tb = testbed.load(temp_tb)
     run(
-        testscript="testscripts/environment.py",
+        testscript="testscripts/custom_main.py",
         runtime=runtime,
-        taskid="environment",
-        testbed=loaded_tb,
-    )
-    run(
-        testscript="testscripts/routing_bgp.py",
-        runtime=runtime,
-        taskid="routing_bgp",
-        testbed=loaded_tb,
-    )
-    run(
-        testscript="testscripts/routing_ospf.py",
-        runtime=runtime,
-        taskid="routing_ospf",
         testbed=loaded_tb,
     )

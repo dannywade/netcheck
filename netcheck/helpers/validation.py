@@ -6,8 +6,8 @@ from time import sleep
 import json
 from genie.utils import Dq
 import shutil
-from genie import testbed
 import yaml
+
 from backend.models import TestResults
 
 """
@@ -19,6 +19,16 @@ TASK_ID_MAPPER = {
     "Environment (CPU, Memory, etc.)": "environment",
     "BGP Routing": "routing_bgp",
     "OSPF Routing": "routing_ospf",
+}
+
+# List of available groups
+GROUPS = ["env", "bgp", "ospf"]
+
+# Maps selected tests to group
+TEST_GROUP_MAPPER = {
+    "Environment (CPU, Memory, etc.)": "env",
+    "BGP Routing": "bgp",
+    "OSPF Routing": "ospf",
 }
 
 
@@ -52,6 +62,85 @@ def generate_testbed(hostname: str, device_ip: str, os_type: str) -> None:
     # Create YAML testbed file
     with open("./temp_testbed/testbed.yaml", "w") as f:
         yaml.dump(tb, f)
+
+
+def update_datafile(datafile_name: str, testcase_params: dict) -> None:
+    """
+    Generate a datafile using a dict of testcase/params as input.
+
+    Example:
+    testscript: bgp
+
+    testcase_params: {
+        bgp_routes_testcase: {
+            parameters: {
+                bgp_routes: 25,
+            }
+        },
+        bgp_neighbors_testcase: {
+            parameters: {
+                ebgp_neighbors: 2,
+                ibgp_neighbors: 1,
+                local_asn: 65000,
+                remote_asns: [65001, 65002]
+            }
+        }
+    }
+
+    """
+    with open(f"./datafiles/{datafile_name}.yaml", "r") as df:
+        try:
+            df_dict = yaml.safe_load(df)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    df_dict["testcases"].update(**testcase_params)
+
+    print(df_dict)
+    # Create YAML testbed file
+    with open(f"./datafiles/{datafile_name}.yaml", "w") as f:
+        yaml.dump(df_dict, f)
+
+
+def generate_datafile(testcase_params: dict) -> None:
+    """
+    Generate a datafile using a dict of testcase names and params as input.
+
+    Example:
+
+    testcase_params = {
+        bgp_routes_testcase: {
+            parameters: {
+                bgp_routes: 25,
+            }
+        },
+        bgp_neighbors_testcase: {
+            parameters: {
+                ebgp_neighbors: 2,
+                ibgp_neighbors: 1,
+                local_asn: 65000,
+                remote_asns: [65001, 65002]
+            }
+        }
+    }
+
+    """
+    # Create YAML testbed file
+    with open("./datafiles/datafile.yaml", "w") as f:
+        yaml.dump(df, f)
+
+    # TODO: Should we add params to individual testcases or as testscript params?
+    df = {"testcases": {**testcase_params}}
+
+    # Create temp dir for testbed file
+    temp_path = "./datafiles"
+    if os.path.exists(temp_path):
+        shutil.rmtree(temp_path)
+    os.makedirs(temp_path)
+
+    # Create YAML testbed file
+    with open("./datafiles/datafile.yaml", "w") as f:
+        yaml.dump(df, f)
 
 
 def run_pyats_job(jobfile_name: str, current_dir: str) -> str:
@@ -221,3 +310,26 @@ def cleanup_pyats_testbed() -> None:
         print("Temp testbed directory has been deleted!")
     else:
         print("Temp testbed directory not found!")
+
+
+if __name__ == "__main__":
+    testscript = "bgp"
+
+    tc_dict = {
+        "bgp_routes_testcase": {
+            "parameters": {
+                "bgp_routes": 25,
+            }
+        },
+        "bgp_neighbors_testcase": {
+            "parameters": {
+                "ebgp_neighbors": 2,
+                "ibgp_neighbors": 1,
+                "local_asn": 65000,
+                "remote_asns": [65001, 65002],
+            }
+        },
+    }
+
+    generate_datafile(tc_dict)
+    # update_datafile("environment", tc_dict)

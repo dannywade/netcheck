@@ -7,18 +7,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class CommonSetup(aetest.CommonSetup):
-    @aetest.subsection
-    def connect_to_devices(self, steps, testbed):
-        device = testbed.devices["uut"]
-
-        # Add device as testscript param
-        self.parent.parameters.update(device=device)
-
-        with steps.start(f"Connect to {device.name}"):
-            device.connect()
-
-
 class CheckEnvironment(aetest.Testcase):
     @aetest.setup
     def setup(self, device):
@@ -62,10 +50,3 @@ class CheckEnvironment(aetest.Testcase):
         @aetest.test
         def verify_power(self, steps, device):
             pass
-
-
-class CommonCleanup(aetest.CommonCleanup):
-    @aetest.subsection
-    def disconnect_from_devices(self, steps, device):
-        with steps.start(f"Disconnecting from {device.name}"):
-            device.disconnect()
