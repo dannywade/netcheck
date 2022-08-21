@@ -16,7 +16,7 @@ from backend.models import TestResults
 logger = logging.getLogger(__name__)
 
 # Maps frontend values to testscript names for custom validation testing
-TASK_ID_MAPPER = {
+TASK_GROUP_MAPPER = {
     "Environment (CPU, Memory, etc.)": "environment",
     "BGP Routing": "routing_bgp",
     "OSPF Routing": "routing_ospf",
@@ -39,6 +39,15 @@ class TestRunner:
         now = datetime.now()
         current_time = now.strftime("%Y%b%d-%H:%M")
 
+        # Map to proper testscript names and format to fit pyATS logic string input as CLI arg
+        test_names = []
+        for t in self.tests:
+            true_name = TASK_GROUP_MAPPER.get(t, None)
+            test_names.append("'" + true_name + "'")
+
+        if not test_names:
+            raise IndexError("No group names passed to Easypy.")
+
         jobfile_dir = "./jobfiles"
         jobfile_path = f"{jobfile_dir}/{jobfile_name}"
         if not exists(jobfile_path):
@@ -46,7 +55,7 @@ class TestRunner:
 
         archive_dir_name = current_time
         temp_tb = "./temp/testbed.yaml"
-        generated_df = "./temp/datafile.yaml"
+        generated_df = "./datafiles/main_datafile.yaml"
         if not exists(temp_tb) or not exists(generated_df):
             raise FileNotFoundError("Generated testbed or datafile not found.")
         # Run the pyATS job via Easypy execution
@@ -58,6 +67,8 @@ class TestRunner:
                 jobfile_path,
                 "--testbed-file",
                 temp_tb,
+                "--groups",
+                f"Or({', '.join(str(x) for x in test_names)})",
                 "--datafile",
                 generated_df,
                 "--no-archive-subdir",
