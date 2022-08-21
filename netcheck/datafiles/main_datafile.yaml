@@ -1,0 +1,12 @@
+extends:
+  # Datafile generated with user-defined test params
+  - temp/datafile.yaml
+
+testcases:
+  # Assigns groups to each testcase. This allows testcases to be dynamically ran.
+  CheckEnvironment:
+    groups: ['environment']
+  BGPTest:
+    groups: ['routing_bgp']
+  OSPFTest:
+    groups: ['routing_ospf']

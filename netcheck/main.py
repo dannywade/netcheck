@@ -19,6 +19,7 @@ from backend.models import TestResults, DeviceInventory
 from backend.db import create_db_and_tables, engine
 from helpers.validation import (
     generate_testbed,
+    generate_datafile,
     run_pyats_job,
     get_pyats_results,
     parse_pyats_results,
@@ -338,6 +339,19 @@ async def validation_results(
 
 @app.post("/custom-post")
 async def custom_validation(request: Request):
+    """
+    Receives user data from custom validation page, parses data, and runs testcases.
+
+    Example payload from frontend:
+    {
+        "test_name": "test1",
+        "tests": ["Environment (CPU, Memory, etc.)"],
+        "test_details": [
+            { "param_name": "cpu_util", "param_value": "50" },
+            { "param_name": "mem_util", "param_value": "80" }
+        ]
+    }
+    """
     # Receive data via XMLHttpRequest
     test_names = await request.body()
     # Convert bytes to Python dict for further parsing
@@ -354,11 +368,18 @@ async def custom_validation(request: Request):
         my_data["test_name"] = str(uuid.uuid4())
     print(my_data)
 
-    # TODO: Store test details (name + test names) into redis/db for further processing and run tests
+    # Convert testcase parameters into dict for datafile
+    tc_params = {}
+    for item in my_data["test_details"]:
+        param = {item["param_name"]: item["param_value"]}
+        tc_params.update(param)
+
+    print(tc_params)
     # TODO: Replace static arg values with variables again
     generate_testbed(
         hostname="csr1000v-1", os_type="iosxe", device_ip="131.226.217.143"
     )
+    generate_datafile(tc_params)
 
     # Pass in list of tests from frontend and execute testscript(s) via pyATS Easypy
     job = q.enqueue(

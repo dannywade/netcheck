@@ -54,52 +54,14 @@ def generate_testbed(hostname: str, device_ip: str, os_type: str) -> None:
     }
 
     # Create temp dir for testbed file
-    temp_path = "./temp_testbed"
+    temp_path = "./temp"
     if os.path.exists(temp_path):
         shutil.rmtree(temp_path)
     os.makedirs(temp_path)
 
     # Create YAML testbed file
-    with open("./temp_testbed/testbed.yaml", "w") as f:
+    with open(f"{temp_path}/testbed.yaml", "w") as f:
         yaml.dump(tb, f)
-
-
-def update_datafile(datafile_name: str, testcase_params: dict) -> None:
-    """
-    Generate a datafile using a dict of testcase/params as input.
-
-    Example:
-    testscript: bgp
-
-    testcase_params: {
-        bgp_routes_testcase: {
-            parameters: {
-                bgp_routes: 25,
-            }
-        },
-        bgp_neighbors_testcase: {
-            parameters: {
-                ebgp_neighbors: 2,
-                ibgp_neighbors: 1,
-                local_asn: 65000,
-                remote_asns: [65001, 65002]
-            }
-        }
-    }
-
-    """
-    with open(f"./datafiles/{datafile_name}.yaml", "r") as df:
-        try:
-            df_dict = yaml.safe_load(df)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    df_dict["testcases"].update(**testcase_params)
-
-    print(df_dict)
-    # Create YAML testbed file
-    with open(f"./datafiles/{datafile_name}.yaml", "w") as f:
-        yaml.dump(df_dict, f)
 
 
 def generate_datafile(testcase_params: dict) -> None:
@@ -109,37 +71,21 @@ def generate_datafile(testcase_params: dict) -> None:
     Example:
 
     testcase_params = {
-        bgp_routes_testcase: {
-            parameters: {
-                bgp_routes: 25,
-            }
-        },
-        bgp_neighbors_testcase: {
-            parameters: {
-                ebgp_neighbors: 2,
-                ibgp_neighbors: 1,
-                local_asn: 65000,
-                remote_asns: [65001, 65002]
-            }
-        }
+            bgp_routes: 25,
+            ebgp_neighbors: 2,
+            ibgp_neighbors: 1,
+            local_asn: 65000,
+            remote_asns: [65001, 65002]
     }
 
     """
-    # Create YAML testbed file
-    with open("./datafiles/datafile.yaml", "w") as f:
-        yaml.dump(df, f)
-
-    # TODO: Should we add params to individual testcases or as testscript params?
-    df = {"testcases": {**testcase_params}}
-
     # Create temp dir for testbed file
-    temp_path = "./datafiles"
-    if os.path.exists(temp_path):
-        shutil.rmtree(temp_path)
-    os.makedirs(temp_path)
-
+    temp_path = "./temp"
+    # Adding params as testscript params vs testcase params
+    # df = {"testcases": {**testcase_params}}
+    df = {"parameters": {**testcase_params}}
     # Create YAML testbed file
-    with open("./datafiles/datafile.yaml", "w") as f:
+    with open(f"{temp_path}/datafile.yaml", "w") as f:
         yaml.dump(df, f)
 
 
@@ -162,50 +108,6 @@ def run_pyats_job(jobfile_name: str, current_dir: str) -> str:
             "run",
             "job",
             jobfile_name,
-            "--no-archive-subdir",
-            "--archive-dir",
-            f"{current_dir}/pyats_logs",
-            "--archive-name",
-            archive_dir_name,
-        ]
-    )
-    # Allow time for archive creation
-    sleep(3)
-    # Return the file path of the archived results
-    results_path = f"{current_dir}/pyats_logs/{archive_dir_name}.zip"
-
-    return results_path
-
-
-def run_custom_pyats_job(tests: list, current_dir: str) -> str:
-    """
-    Runs pyATS jobfile and stores result in custom archive folder
-    """
-    # current_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Get current time
-    now = datetime.now()
-    current_time = now.strftime("%Y%b%d-%H:%M")
-
-    archive_dir_name = current_time
-
-    # Map to proper testscript names and format to fit pyATS logic string input as CLI arg
-    test_names = []
-    for t in tests:
-        true_name = TASK_ID_MAPPER.get(t, None)
-        test_names.append("'" + true_name + "'")
-
-    if not test_names:
-        raise IndexError("No task IDs passed to Easypy.")
-    # Run the pyATS job via Easypy execution
-    py_run = subprocess.run(
-        args=[
-            "pyats",
-            "run",
-            "job",
-            "./jobfiles/custom_jobfile.py",
-            "--task-uids",
-            f"Or({', '.join(str(x) for x in test_names)})",
             "--no-archive-subdir",
             "--archive-dir",
             f"{current_dir}/pyats_logs",
@@ -303,10 +205,10 @@ def cleanup_pyats_testbed() -> None:
     """
     Remove the temp directory used to store the pyATS job results
     """
-    if os.path.exists("temp_testbed"):
+    if os.path.exists("temp"):
         print("Temp results directory has been found!")
         # Delete the temp dir and all of its content
-        shutil.rmtree("temp_testbed")
+        shutil.rmtree("temp")
         print("Temp testbed directory has been deleted!")
     else:
         print("Temp testbed directory not found!")

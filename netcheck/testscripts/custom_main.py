@@ -1,7 +1,8 @@
 from pyats import aetest
 from genie.utils import Dq
 import logging
-import environment, routing_bgp, routing_ospf
+
+# import environment, routing_bgp, routing_ospf
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +21,10 @@ class CommonSetup(aetest.CommonSetup):
 
 
 ### TESTCASE SECTION ###
-# Call/run custom testcases
-environment.CheckEnvironment
-routing_bgp.BGPTest
-routing_ospf.OSPFTest
+# Import custom testcases
+from environment import CheckEnvironment
+from routing_bgp import BGPTest
+from routing_ospf import OSPFTest
 
 
 class CommonCleanup(aetest.CommonCleanup):

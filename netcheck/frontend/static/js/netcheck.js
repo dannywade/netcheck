@@ -1,8 +1,8 @@
-const bgp_info = '<label>Expected # of BGP Routes</label> <input id="testParam" name="bgp_routes" type="text" /><br><label>Expected # of BGP Neighbors</label> <input id="testParam" name="bgp_neighbors" type="text" />';
+const bgp_info = '<label>Expected # of BGP Routes</label> <input id="testParam" name="bgp_routes" type="number" /><br><label>Expected # of BGP Neighbors</label> <input id="testParam" name="bgp_neighbors" type="number" />';
 
-const env_info = '<label>CPU Utilization (%)</label> <input id="testParam" name="cpu_util" type="text" /><br><label>Memory Utilization (%)</label> <input id="testParam" name="mem_util" type="text" />';
+const env_info = '<label>CPU Utilization (%)</label> <input id="testParam" name="cpu_util" type="number" /><br><label>Memory Utilization (%)</label> <input id="testParam" name="mem_util" type="number" />';
 
-const ospf_info = '<label>Expected # of OSPF Routes</label> <input id="testParam" name="ospf_routes" type="text" /><br><label>Expected # of OSPF Neighbors</label> <input id="testParam" name="ospf_neighbors" type="text" />';
+const ospf_info = '<label>Expected # of OSPF Routes</label> <input id="testParam" name="ospf_routes" type="number" /><br><label>Expected # of OSPF Neighbors</label> <input id="testParam" name="ospf_neighbors" type="number" />';
 
 const no_data = '<label>No Data</label>'
 
@@ -94,7 +94,7 @@ function saveTextAsFile(textToWrite, fileNameToSaveAs) {
 function sendTestDetails() {
 	// const drops = document.getElementById("dropzone").innerHTML
 	const user_test_name = document.getElementById("testName").value;
-	const testcase_names = document.querySelectorAll("testcase")
+	const testcase_names = document.querySelectorAll("testcase");
 	const test_details = document.querySelectorAll('input');
 	const test_names = [];
 	const test_params = [];

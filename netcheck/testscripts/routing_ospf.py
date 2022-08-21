@@ -6,5 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 class OSPFTest(aetest.Testcase):
-    groups = ["ospf"]
-    logging.info("OSPF testcase")
+    logging.info("OSPF testcase imported.")
+
+    @aetest.test
+    def ospf_test1(self):
+        print("This is OSPF Test 1")

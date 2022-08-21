@@ -6,5 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 class BGPTest(aetest.Testcase):
-    groups = ["bgp"]
-    logging.info("BGP testcase")
+    logging.info("BGP testcase imported.")
+
+    @aetest.test
+    def bgp_test1(self):
+        logging.info("This is BGP Test 1")
