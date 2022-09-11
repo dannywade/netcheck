@@ -11,12 +11,11 @@ from sqlmodel import Session
 import os
 from datetime import datetime
 from rq import Queue
-from rq.job import Job
 
 # Local imports
 from api.api_v1.api import api_router
 from backend.models import TestResults, DeviceInventory
-from backend.db import create_db_and_tables, engine
+from backend.db import create_db_and_tables, create_dummy_data, engine
 from helpers.validation import (
     generate_testbed,
     generate_datafile,
@@ -50,128 +49,8 @@ q = Queue(connection=conn)  # no args implies the default queue
 def on_startup():
     create_db_and_tables()
     # Add dummy records for testing
-    create_test_results()
+    create_dummy_data()
 
-
-# Adds data in as rows
-def create_test_results():
-    current_date = datetime.now()
-    # current_date = get_time.strftime("%m/%d/%Y %H:%M:%S")
-    result1 = TestResults(
-        name="circuit_upgrade",
-        executed_at=current_date,
-        success_rate=100.0,
-        total_tests=3,
-        tests_passed=3,
-        tests_failed=0,
-    )
-    result2 = TestResults(
-        name="wan_check",
-        executed_at=current_date,
-        success_rate=50.0,
-        total_tests=4,
-        tests_passed=2,
-        tests_failed=2,
-    )
-    result3 = TestResults(
-        name="l2_stp_check",
-        executed_at=current_date,
-        success_rate=0,
-        total_tests=3,
-        tests_passed=0,
-        tests_failed=3,
-    )
-    result4 = DeviceInventory(
-        hostname="RT-1",
-        mgmt_ip="10.1.1.1",
-        vendor="cisco",
-        model="9500",
-        os_version="17.6.6",
-        serial_number="ABC1234",
-    )
-    result5 = DeviceInventory(
-        hostname="SW-1",
-        mgmt_ip="10.1.1.2",
-        vendor="cisco",
-        model="9600",
-        os_version="16.8.5",
-        serial_number="ZYX6789",
-    )
-
-    with Session(engine) as session:
-        session.add(result1)
-        session.add(result2)
-        session.add(result3)
-        session.add(result4)
-        session.add(result5)
-
-        session.commit()
-
-        session.refresh(result1)
-
-
-# Adds data in as rows
-def create_inventory_devices():
-    result1 = DeviceInventory(
-        hostname="RT-1",
-        mgmt_ip="10.1.1.1",
-        vendor="cisco",
-        model="9200",
-        os_version="17.3.3",
-        serial_number="ABCD12345",
-    )
-    result2 = DeviceInventory(
-        hostname="RT-2",
-        mgmt_ip="10.1.1.2",
-        vendor="cisco",
-        model="9300",
-        os_version="17.3.4a",
-        serial_number="ABCD12346",
-    )
-    result3 = DeviceInventory(
-        hostname="RT-3",
-        mgmt_ip="10.1.1.3",
-        vendor="cisco",
-        model="9400",
-        os_version="17.8.8",
-        serial_number="QWERTY4321",
-    )
-
-    with Session(engine) as session:
-        session.add(result1)
-        session.add(result2)
-        session.add(result3)
-
-        session.commit()
-
-        session.refresh(result1)
-
-
-def select_test_results():
-    with Session(engine) as session:
-        # Filter to test results with 100% success rate
-        statement = select(TestResults).where(TestResults.success_rate == 100.0)
-        result_1 = session.get(TestResults, 1)
-        results = session.exec(statement)
-        one_result = results.first()
-
-        # Updating values for first row with 100% success rate
-        # result_1.success_rate = 55.0
-        # session.add(result_1)
-        # session.commit()
-        # session.refresh(result_1)
-        # print(result_1)
-
-        # Print all rows
-        print(results.all())
-        # Print first result of many
-        # print(results.first())
-
-
-# For Testing - Used to create dummy records in DB
-# create_db_and_tables()
-# create_test_results()
-# select_test_results()
 
 # API router
 app.include_router(api_router, prefix="/api/v1")
