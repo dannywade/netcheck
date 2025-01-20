@@ -31,3 +31,37 @@ The tool is built using Python and multiple Python libraries. Below is a breakdo
 - SQLite
 - pyATS/Genie
 - *Batfish (TBD)*
+
+## Getting Started for Developers
+
+***Currently, there is not a "production-ready" deployment, as this project is not complete. All instructions below are for development purposes only.***
+
+1. Clone the project repo.
+```
+git clone https://github.com/dannywade/netcheck.git
+```
+
+2. Setup a Python virtual environment and install the project dependencies.
+```
+python -m venv venv
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+3. Start a FastAPI dev server with uvicorn.
+```
+uvicorn main:app --reload
+```
+
+4. Start a `redis` Docker container. This is used to run background jobs.
+```
+docker run -it -p 6379:6379 redis
+```
+
+5. Once redis is up and running, launch an `rq` worker in a new terminal window.
+```
+rq worker --with-scheduler
+```
+
+With the FastAPI development web server, redis, and the rq worker running, you are ready to begin development. You can monitor the rq worker queue using the `rq info` command or using the [RQ dashboard](https://python-rq.org/docs/monitoring/). These commands are optional, but very helpful to check on the progress of background jobs.
